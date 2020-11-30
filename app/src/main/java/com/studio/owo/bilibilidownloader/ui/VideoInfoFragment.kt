@@ -1,8 +1,10 @@
 package com.studio.owo.bilibilidownloader.ui
 
+import android.app.DownloadManager
+import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
-import android.os.Environment.getExternalStoragePublicDirectory
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +22,7 @@ import com.studio.owo.bilibilidownloader.core.api.`interface`.BiliBiliApiService
 import com.studio.owo.bilibilidownloader.core.api.dataclass.VideoInfo
 import com.studio.owo.bilibilidownloader.core.api.dataclass.VideoPlayUrl
 import com.studio.owo.bilibilidownloader.core.net.HttpUtil
+import com.studio.owo.bilibilidownloader.getApplicationContext
 import com.studio.owo.bilibilidownloader.toast
 import kotlinx.android.synthetic.main.fragment_video_info.*
 import okhttp3.ResponseBody
@@ -28,8 +31,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.File
-import java.io.IOException
 import java.lang.reflect.Type
 
 
@@ -45,6 +46,11 @@ class VideoInfoFragment : Fragment() {
     private val requestManager: RequestManager by lazy { Glide.with(this) }
 
     lateinit var videoInfoResult: VideoInfo
+    private val retrofit: Retrofit = Retrofit.Builder()
+        .baseUrl("https://api.bilibili.com/") //设置网络请求的Url地址
+        .addConverterFactory(GsonConverterFactory.create()) //设置数据解析器
+        .build()
+    private val biliApiService = retrofit.create(BiliBiliApiService::class.java)
 
 
     override fun onCreateView(
@@ -62,19 +68,9 @@ class VideoInfoFragment : Fragment() {
         super.onStart()
 
         downloadButton.setOnClickListener {
-            val retrofit = Retrofit.Builder()
-                .baseUrl("https://api.bilibili.com/") //设置网络请求的Url地址
-                .addConverterFactory(GsonConverterFactory.create()) //设置数据解析器
-                .build()
-            val biliApiService = retrofit.create(BiliBiliApiService::class.java)
-
             val call = biliApiService.getVideoPlayUrl(videoInfoResult.bvid, videoInfoResult.cid)
-
             call.enqueue(object : Callback<ResponseBody> {
-                override fun onResponse(
-                    call: Call<ResponseBody>,
-                    response: Response<ResponseBody>
-                ) {
+                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                     //Log.d(this@VideoInfoFragment::class.java.simpleName,response.body()!!.string())
                     val json = Gson()
                     val userType: Type = object : TypeToken<TResult<VideoPlayUrl>>() {}.type
@@ -86,39 +82,35 @@ class VideoInfoFragment : Fragment() {
                     Log.d(this@VideoInfoFragment::class.java.simpleName, playUrl.dUrl[0].url)
                     Log.d(this@VideoInfoFragment::class.java.simpleName, "UserAgent\n" + HttpUtil.getUserAgent())
 
-                    /*post {
-                        val request = DownloadManager.Request(Uri.parse(playUrl.dUrl[0].url))
-                        //val request = DownloadManager.Request(Uri.parse("https://material.io/resources/icons/static/ic_icons_192px_light.svg"))
+                    val request = DownloadManager.Request(Uri.parse(playUrl.dUrl[0].url))
 
-                        request.addRequestHeader("User-Agent", HttpUtil.getUserAgent())
-                        request.addRequestHeader("referer","https://www.bilibili.com/")
-                        request.addRequestHeader("origin","https://www.bilibili.com/")
-                        //request.addRequestHeader("cookie","")
+                    request.addRequestHeader("User-Agent", "Bilibili Freedoooooom/MarkII")
+                    request.addRequestHeader("referer","https://www.bilibili.com/")
+                    request.addRequestHeader("origin","https://www.bilibili.com/")
+                    //request.addRequestHeader("cookie","")
 
-                        //设置在什么网络情况下进行下载
-                        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI)
-                        //设置通知栏标题
-                        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                        request.setVisibleInDownloadsUi(true)
-                        request.setTitle("下载")
-                        request.setDescription("正在下载" + videoInfoResult.bvid )
-                        //request.setAllowedOverRoaming(false)
-                        //设置文件存放目录
-                        /*request.setDestinationInExternalFilesDir(
-                            getApplicationContext(),
-                            Environment.DIRECTORY_MOVIES,
-                            videoInfoResult.bvid// + " - " + videoInfoResult.title + ".flv"
-                        )
-                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdir()*/
-                        request.setDestinationInExternalPublicDir( Environment.DIRECTORY_DOWNLOADS , videoInfoResult.bvid )
-                        //request.setDestinationUri(Uri.fromFile(File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),videoInfoResult.bvid)))
+                    //设置在什么网络情况下进行下载
+                    request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI)
+                    //设置通知栏标题
+                    request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                    //request.setTitle("下载")
+                    //request.setDescription("正在下载" + videoInfoResult.bvid )
+                    //request.setAllowedOverRoaming(false)
+                    //设置文件存放目录
+                    /*request.setDestinationInExternalFilesDir(
+                        getApplicationContext(),
+                        Environment.DIRECTORY_MOVIES,
+                        videoInfoResult.bvid// + " - " + videoInfoResult.title + ".flv"
+                    )
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdir()*/
+                    request.setDestinationInExternalPublicDir( Environment.DIRECTORY_MOVIES , videoInfoResult.owner.name + " - " + videoInfoResult.title + " _" + videoInfoResult.bvid + ".mp4" )
+                    //request.setDestinationUri(Uri.fromFile(File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),videoInfoResult.bvid)))
 
-                        val downManager = getApplicationContext().getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-                        val id = downManager.enqueue(request)
-                        toast("Downloading $id")
-                    }*/
+                    val downManager = getApplicationContext().getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                    val id = downManager.enqueue(request)
+                    toast("Downloading $id")
 
-                    HttpUtil.sendHttpRequest(playUrl.dUrl[0].url,"https://www.bilibili.com/video/" + videoInfoResult.aid , object : okhttp3.Callback {
+                    /*HttpUtil.sendHttpRequest(playUrl.dUrl[0].url,"https://www.bilibili.com/video/" + videoInfoResult.aid , object : okhttp3.Callback {
                         override fun onFailure(call: okhttp3.Call, e: IOException) {
                             Log.e(
                                 this@VideoInfoFragment::class.java.simpleName,
@@ -166,23 +158,21 @@ class VideoInfoFragment : Fragment() {
                             toast("Downloaded")
                         }
 
-                    })
+                    })*/
 
                 }
-
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    Log.e(
-                        this@VideoInfoFragment::class.java.simpleName,
-                        t.message,
-                        t
-                    )
-                }
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) { Log.e(this@VideoInfoFragment::class.java.simpleName, t.message, t) }
             })
-            /*requestManager
-                .load(videoInfoResult.pic)
-                .apply(options)
-                .into(it as ImageView)*/
         }
+
+        videoPicturesImageView.setOnClickListener {
+
+        }
+        videoPicturesImageView.setOnLongClickListener {
+
+            true
+        }
+
     }
 
     fun onResult(call: Call<ResponseBody>) {
@@ -202,7 +192,7 @@ class VideoInfoFragment : Fragment() {
                 requestManager
                     .load(videoInfoResult.pic)
                     .apply(options)
-                    .into(this@VideoInfoFragment.ImageView)
+                    .into(this@VideoInfoFragment.videoPicturesImageView)
                 this@VideoInfoFragment.TitleTextView.text = videoInfoResult.title
                 this@VideoInfoFragment.Title2TextView.text = videoInfoResult.owner.name
 

@@ -6,8 +6,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ImageView
-        android:id="@+id/ImageView"
-        android:layout_width="255dp"
+        android:id="@+id/videoPicturesImageView"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:minHeight="100dp"
         android:adjustViewBounds="true"
@@ -34,7 +34,7 @@
         android:shadowDy="2"
         android:shadowRadius="4"
         android:text="@string/text_view"
-        android:textSize="26sp"
+        android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -60,21 +60,49 @@
         app:layout_constraintStart_toStartOf="@+id/TitleTextView"
         app:layout_constraintTop_toBottomOf="@+id/TitleTextView" />
 
-    <ImageButton
+    <Button
         android:id="@+id/downloadButton"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="32dp"
-        android:background="@drawable/middle_grey"
         android:clickable="true"
         android:focusable="true"
-        android:scaleType="centerCrop"
+        android:text="@string/download"
+        app:icon="@drawable/ic_get_app_black_48dp"
+        app:iconSize="24dp"
+        style="@style/Widget.MaterialComponents.Button.Icon"
 
-        android:src="@drawable/ic_get_app_black_48dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ImageView" />
+        app:layout_constraintTop_toBottomOf="@+id/videoPicturesImageView" />
 
+    <Button
+        android:id="@+id/cloneButton"
+        style="@style/Widget.MaterialComponents.Button.Icon"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="clone"
+        app:icon="@drawable/ic_get_app_black_48dp"
+        app:iconSize="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/downloadButton"
+        app:layout_constraintTop_toTopOf="@+id/downloadButton" />
+
+    <Button
+        android:id="@+id/shareButton"
+        style="@style/Widget.MaterialComponents.Button.Icon"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="share"
+        app:icon="@drawable/ic_get_app_black_48dp"
+        app:iconSize="24dp"
+        app:layout_constraintEnd_toStartOf="@+id/downloadButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/downloadButton" />
 </androidx.constraintlayout.widget.ConstraintLayout>

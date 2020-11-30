@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Bilibili Downloader</string>
     <string name="text_view">Text View</string>
+    <string name="download">download</string>
 </resources>
