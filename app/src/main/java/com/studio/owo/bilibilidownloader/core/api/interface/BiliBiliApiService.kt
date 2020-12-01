@@ -10,6 +10,9 @@ interface BiliBiliApiService {
     fun getAvVideoInfo(@Query("aid") id: Int) : Call<ResponseBody>
 
     @GET("x/web-interface/view?")
+    fun getAvVideoInfo(@Query("aid") id: String) : Call<ResponseBody>
+
+    @GET("x/web-interface/view?")
     fun getBvVideoInfo(@Query("bvid") id: String) : Call<ResponseBody>
 
     @GET("x/player/playurl?")
