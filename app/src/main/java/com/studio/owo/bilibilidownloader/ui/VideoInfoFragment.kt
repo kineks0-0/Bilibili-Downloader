@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.studio.owo.bilibilidownloader.R
@@ -21,9 +22,7 @@ import com.studio.owo.bilibilidownloader.core.api.TResult
 import com.studio.owo.bilibilidownloader.core.api.`interface`.BiliBiliApiService
 import com.studio.owo.bilibilidownloader.core.api.dataclass.VideoInfo
 import com.studio.owo.bilibilidownloader.core.api.dataclass.VideoPlayUrl
-import com.studio.owo.bilibilidownloader.core.net.HttpUtil
 import com.studio.owo.bilibilidownloader.getApplicationContext
-import com.studio.owo.bilibilidownloader.toast
 import kotlinx.android.synthetic.main.fragment_video_info.*
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -31,6 +30,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.lang.Exception
 import java.lang.reflect.Type
 
 
@@ -51,14 +51,18 @@ class VideoInfoFragment : Fragment() {
         .addConverterFactory(GsonConverterFactory.create()) //设置数据解析器
         .build()
     private val biliApiService = retrofit.create(BiliBiliApiService::class.java)
+    private val json = Gson()
+
+
+    private var downloadManagerQueryID = -1L
+    private val downManager by lazy { getApplicationContext().getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager }
 
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_video_info, container, false)//super.onCreateView(inflater, container, savedInstanceState)
-
+    ): View? = inflater.inflate(R.layout.fragment_video_info, container, false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,30 +71,61 @@ class VideoInfoFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
+        downloadButton.setOnLongClickListener {
+
+            //val contextView = findViewById<View>(R.id.context_view)
+
+            Snackbar.make(it, "Long Click", Snackbar.LENGTH_SHORT)
+                .show()
+
+            true
+        }
+
         downloadButton.setOnClickListener {
             val call = biliApiService.getVideoPlayUrl(videoInfoResult.bvid, videoInfoResult.cid)
             call.enqueue(object : Callback<ResponseBody> {
-                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                    //Log.d(this@VideoInfoFragment::class.java.simpleName,response.body()!!.string())
-                    val json = Gson()
+                override fun onResponse(
+                    call: Call<ResponseBody>,
+                    response: Response<ResponseBody>
+                ) {
+
+
                     val userType: Type = object : TypeToken<TResult<VideoPlayUrl>>() {}.type
                     val infoResult: TResult<VideoPlayUrl> = json.fromJson(
                         response.body()!!.string(), userType
                     )
                     val playUrl = infoResult.data
-                    Log.d(this@VideoInfoFragment::class.java.simpleName, playUrl.toString())
-                    Log.d(this@VideoInfoFragment::class.java.simpleName, playUrl.dUrl[0].url)
-                    Log.d(this@VideoInfoFragment::class.java.simpleName, "UserAgent\n" + HttpUtil.getUserAgent())
 
-                    val request = DownloadManager.Request(Uri.parse(playUrl.dUrl[0].url))
+                    Snackbar.make(
+                        it.rootView,
+                        "Downloading Video \$Bvid = " + videoInfoResult.bvid,
+                        Snackbar.LENGTH_SHORT
+                    )
+                        .setAction("CANCEL") {
+                            if (downloadManagerQueryID == -1L) return@setAction
+                            try {
+                                downManager.remove(downloadManagerQueryID)
+                            } catch (e: Exception) {
+                                Log.e(this@VideoInfoFragment::class.simpleName, e.message, e)
+                            }
+
+                        }
+                        .show()
+                    //return
+                    //Log.d(this@VideoInfoFragment::class.java.simpleName, playUrl.toString())
+                    //Log.d(this@VideoInfoFragment::class.java.simpleName, playUrl.dUrl[0].url)
+                    //Log.d(this@VideoInfoFragment::class.java.simpleName, "UserAgent\n" + HttpUtil.getUserAgent())
+                    val url = playUrl.dUrl[0].url
+                    val request = DownloadManager.Request(Uri.parse(url))
 
                     request.addRequestHeader("User-Agent", "Bilibili Freedoooooom/MarkII")
-                    request.addRequestHeader("referer","https://www.bilibili.com/")
-                    request.addRequestHeader("origin","https://www.bilibili.com/")
+                    request.addRequestHeader("referer", "https://www.bilibili.com/")
+                    request.addRequestHeader("origin", "https://www.bilibili.com/")
                     //request.addRequestHeader("cookie","")
 
+                    //request.setMimeType("application/vnd.android.package-archive");
                     //设置在什么网络情况下进行下载
-                    request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI)
+                    //request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI)
                     //设置通知栏标题
                     request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                     //request.setTitle("下载")
@@ -103,65 +138,25 @@ class VideoInfoFragment : Fragment() {
                         videoInfoResult.bvid// + " - " + videoInfoResult.title + ".flv"
                     )
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdir()*/
-                    request.setDestinationInExternalPublicDir( Environment.DIRECTORY_MOVIES , videoInfoResult.owner.name + " - " + videoInfoResult.title + " _" + videoInfoResult.bvid + ".mp4" )
+                    request.setDestinationInExternalPublicDir(
+                        Environment.DIRECTORY_MOVIES,
+                        videoInfoResult.owner.name + " - " + videoInfoResult.title + " _" + videoInfoResult.bvid + "_" + playUrl.format + ".mp4"
+                    )
                     //request.setDestinationUri(Uri.fromFile(File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),videoInfoResult.bvid)))
 
-                    val downManager = getApplicationContext().getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-                    val id = downManager.enqueue(request)
-                    toast("Downloading $id")
+                    downloadManagerQueryID = downManager.enqueue(request)
 
-                    /*HttpUtil.sendHttpRequest(playUrl.dUrl[0].url,"https://www.bilibili.com/video/" + videoInfoResult.aid , object : okhttp3.Callback {
-                        override fun onFailure(call: okhttp3.Call, e: IOException) {
-                            Log.e(
-                                this@VideoInfoFragment::class.java.simpleName,
-                                e.message,
-                                e
-                            )
-                        }
-
-                        override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
-
-                            val dirMovies: File =
-                                getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES)
-                            dirMovies.mkdirs()
-                            val outFile = File(
-                                dirMovies,
-                                videoInfoResult.bvid + " - " + videoInfoResult.title + ".mp4"
-                            )
-
-                            outFile.writeBytes(response.body()!!.bytes())
-                            toast("Downloaded")
-                        }
-
-                    })
-
-                    HttpUtil.sendHttpRequest(videoInfoResult.pic,"https://www.bilibili.com/video/" + videoInfoResult.aid , object : okhttp3.Callback {
-                        override fun onFailure(call: okhttp3.Call, e: IOException) {
-                            Log.e(
-                                this@VideoInfoFragment::class.java.simpleName,
-                                e.message,
-                                e
-                            )
-                        }
-
-                        override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
-
-                            val dirMovies: File =
-                                getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                            dirMovies.mkdirs()
-                            val outFile = File(
-                                dirMovies,
-                                videoInfoResult.bvid + " - " + videoInfoResult.title + ".jpg"
-                            )
-
-                            outFile.writeBytes(response.body()!!.bytes())
-                            toast("Downloaded")
-                        }
-
-                    })*/
+                    /*Snackbar.make(
+                        it.rootView,
+                        "DownloadManagerQueryID = $id",
+                        Snackbar.LENGTH_SHORT
+                    ).show()*/
 
                 }
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) { Log.e(this@VideoInfoFragment::class.java.simpleName, t.message, t) }
+
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    Log.e(this@VideoInfoFragment::class.java.simpleName, t.message, t)
+                }
             })
         }
 
@@ -178,9 +173,7 @@ class VideoInfoFragment : Fragment() {
     fun onResult(call: Call<ResponseBody>) {
         call.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                //toast(response.body()!!.string())
-                //toast(response.toString())
-                val json = Gson()
+                //val json = Gson()
                 val userType: Type = object : TypeToken<TResult<VideoInfo>>() {}.type
                 val infoResult: TResult<VideoInfo> = json.fromJson(
                     response.body()!!.string(),
@@ -188,13 +181,12 @@ class VideoInfoFragment : Fragment() {
                 )
                 videoInfoResult =
                     infoResult.data//gson.fromJson(response.body()!!.string(), VideoInfo::class.java)
-                //toast(videoInfoResult.toString())
                 requestManager
                     .load(videoInfoResult.pic)
                     .apply(options)
                     .into(this@VideoInfoFragment.videoPicturesImageView)
                 this@VideoInfoFragment.TitleTextView.text = videoInfoResult.title
-                this@VideoInfoFragment.Title2TextView.text = videoInfoResult.owner.name
+                this@VideoInfoFragment.ownerName.text = videoInfoResult.owner.name
 
             }
 

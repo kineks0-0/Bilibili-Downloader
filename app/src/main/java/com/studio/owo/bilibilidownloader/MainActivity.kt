@@ -16,38 +16,15 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.studio.owo.bilibilidownloader.core.api.TResult
 import com.studio.owo.bilibilidownloader.core.api.`interface`.BiliBiliApiService
-import com.studio.owo.bilibilidownloader.core.api.dataclass.VideoInfo
+import com.studio.owo.bilibilidownloader.databinding.FragmentVideoInfoBinding
 import com.studio.owo.bilibilidownloader.ui.VideoInfoFragment
-import kotlinx.android.synthetic.main.fragment_video_info.*
-import okhttp3.ResponseBody
-import org.json.JSONObject
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.IOException
-import java.lang.reflect.Type
-import kotlin.concurrent.thread
 
 
 class MainActivity : AppCompatActivity() {
 
-
-    private val rdp by lazy { 10 }
-    private val options: RequestOptions by lazy {
-        RequestOptions
-                .bitmapTransform(RoundedCorners(rdp))
-                .placeholder(R.drawable.view_background)
-                .error(R.drawable.view_background2)
-    }
-    private val requestManager: RequestManager by lazy {
-        Glide.with(this)
-    }
 
     private  val videoInfoFragment by lazy { VideoInfoFragment() }
 
@@ -67,32 +44,9 @@ class MainActivity : AppCompatActivity() {
         //val call = biliApiService.getBvVideoInfo("BV16Z4y137j8")
         val call = biliApiService.getAvVideoInfo(23339072)
         videoInfoFragment.onResult(call)
-        /*call.enqueue(object : Callback<ResponseBody> {
-            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                //toast(response.body()!!.string())
-                toast(response.toString())
-                val json = Gson()
-                val userType: Type = object : TypeToken<TResult<VideoInfo>>() {}.type
-                val infoResult: TResult<VideoInfo> = json.fromJson(response.body()!!.string(), userType)
-                val videoInfoResult = infoResult.data//gson.fromJson(response.body()!!.string(), VideoInfo::class.java)
-                toast(videoInfoResult.toString())
-                requestManager
-                        .load(videoInfoResult.pic)
-                        .apply(options)
-                        .into(videoInfoFragment.ImageView)
-                videoInfoFragment.TitleTextView.text = videoInfoResult.title
-                videoInfoFragment.Title2TextView.text = videoInfoResult.owner.name
-            }
 
-            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Log.e(
-                    this@MainActivity::class.java.simpleName,
-                    t.message,
-                    t
-                )
-            }
-        })*/
     }
+
 
     override fun onResume() {
         super.onResume()
@@ -141,7 +95,7 @@ class MainActivity : AppCompatActivity() {
                         )
                     ) {
                         // 给用于予以权限解释, 对于已经拒绝过的情况，先提示申请理由，再进行申请
-                        toast("程序需要读写权限来读取缓存和导出歌曲")
+                        toast("程序需要读写权限保证正常运行")
                     }/* else {
                         // 用户勾选了不再提醒，引导用户进入设置界面进行开启权限
                         /*Snackbar.make(view, "需要打开权限才能使用该功能，您也可以前往设置->应用。。。开启权限",

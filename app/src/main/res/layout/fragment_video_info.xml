@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/videoPicturesImageView"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:minHeight="100dp"
-        android:adjustViewBounds="true"
         android:layout_marginTop="32dp"
+        android:adjustViewBounds="true"
         android:background="@drawable/view_background"
+        android:contentDescription="@string/app_name"
         android:elevation="6dp"
+        android:minHeight="100dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Title2TextView"
-        android:contentDescription="@string/app_name" />
+        app:layout_constraintTop_toBottomOf="@+id/ownerName" />
 
     <TextView
         android:id="@+id/TitleTextView"
@@ -40,30 +40,31 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/Title2TextView"
+    <Button
+        android:id="@+id/ownerName"
+        style="@style/Widget.MaterialComponents.Button.Icon"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:background="@drawable/view_background2"
         android:elevation="2dp"
         android:ellipsize="end"
+        android:maxHeight="50dp"
         android:maxLines="1"
-        android:paddingLeft="12dp"
-        android:paddingTop="4dp"
-        android:paddingRight="12dp"
-        android:paddingBottom="4dp"
         android:text="@string/text_view"
         android:textSize="16sp"
-        android:textColor="@color/white"
+        app:icon="@drawable/ic_account_circle_white_48dp"
+        app:iconSize="24dp"
+        app:cornerRadius="20dp"
+        app:strokeColor="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="@+id/TitleTextView"
         app:layout_constraintStart_toStartOf="@+id/TitleTextView"
         app:layout_constraintTop_toBottomOf="@+id/TitleTextView" />
 
     <Button
         android:id="@+id/downloadButton"
+        style="@style/Widget.MaterialComponents.Button.Icon"
         android:layout_width="wrap_content"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="32dp"
         android:clickable="true"
@@ -71,8 +72,6 @@
         android:text="@string/download"
         app:icon="@drawable/ic_get_app_black_48dp"
         app:iconSize="24dp"
-        style="@style/Widget.MaterialComponents.Button.Icon"
-
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -82,7 +81,8 @@
         android:id="@+id/cloneButton"
         style="@style/Widget.MaterialComponents.Button.Icon"
         android:layout_width="wrap_content"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
         android:clickable="true"
         android:focusable="true"
         android:text="clone"
@@ -96,7 +96,8 @@
         android:id="@+id/shareButton"
         style="@style/Widget.MaterialComponents.Button.Icon"
         android:layout_width="wrap_content"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:clickable="true"
         android:focusable="true"
         android:text="share"
