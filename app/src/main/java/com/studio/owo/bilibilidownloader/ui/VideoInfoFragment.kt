@@ -24,7 +24,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.studio.owo.bilibilidownloader.MainActivity
 import com.studio.owo.bilibilidownloader.R
 import com.studio.owo.bilibilidownloader.core.api.*
 import com.studio.owo.bilibilidownloader.core.api.`interface`.BiliBiliApiService
@@ -44,11 +43,16 @@ import java.lang.reflect.Type
 class VideoInfoFragment : Fragment() {
 
     private val rdp by lazy { 10 }
-    private val options: RequestOptions by lazy {
+    private val optionsRadius: RequestOptions by lazy {
         RequestOptions
             .bitmapTransform(RoundedCorners(rdp))
             .placeholder(R.drawable.view_background_radius)
             .error(R.drawable.view_background2_radius)
+    }
+    private val options: RequestOptions by lazy {
+        RequestOptions
+            .placeholderOf(R.drawable.view_background)
+            .error(R.drawable.view_background2)
     }
     private val requestManager: RequestManager by lazy { Glide.with(this) }
 

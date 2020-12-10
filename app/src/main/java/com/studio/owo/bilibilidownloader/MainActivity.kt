@@ -21,12 +21,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
-    }
-
-    override fun onStart() {
-        super.onStart()
         VideoInfoActivity.launchActivity(this,"AV23339072")
+        VideoInfoActivity.launchActivity(this,"BV1LK411H7RB")
+        VideoInfoActivity.launchActivity(this,"BV1Vg4y1q72j")
+
     }
 
     override fun onResume() {

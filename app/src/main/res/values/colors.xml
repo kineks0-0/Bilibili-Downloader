@@ -12,5 +12,7 @@
     <color name="fab_bg">#536DFE</color>
     <color name="colorPrimary">#615CFF</color>
     <color name="colorPrimaryVariant">#5953FE</color>
+    <color name="textColorBlack">#CC000000</color>
+    <color name="textColorBlack2">#99000000</color>
     <!--color name="colorAccent">#7589ED#6A5FFF#6C73FF</color-->
 </resources>

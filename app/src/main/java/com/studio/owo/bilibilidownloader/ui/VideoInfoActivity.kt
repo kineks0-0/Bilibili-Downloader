@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.MenuItem
 import com.google.android.material.snackbar.Snackbar
 import com.studio.owo.bilibilidownloader.R
@@ -35,13 +36,8 @@ class VideoInfoActivity : AppCompatActivity() {
         topAppBar.setOnMenuItemClickListener {
             videoInfoFragment.onOptionsItemSelected(it)
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
 
         val videoID: String = intent.getStringExtra("ID") ?: "AV23339072"
-
         val retrofit = Retrofit.Builder()
             .baseUrl("https://api.bilibili.com/") //设置网络请求的Url地址
             .addConverterFactory(GsonConverterFactory.create()) //设置数据解析器
@@ -56,8 +52,18 @@ class VideoInfoActivity : AppCompatActivity() {
         videoInfoFragment.onResult(call)
     }
 
+    /*override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        when(keyCode) {
+            KeyEvent.KEYCODE_BACK -> {
+                //videoInfoFragment.
+                this.finish()
+                return true
+            }
+        }
+        return super.onKeyDown(keyCode, event)
+    }
 
-    /*override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return videoInfoFragment.onOptionsItemSelected(item)
     }*/
 
