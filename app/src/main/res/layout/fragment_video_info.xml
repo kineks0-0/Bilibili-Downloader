@@ -1,30 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/videoInfoFragmentLayout">
 
     <ImageView
         android:id="@+id/videoPicturesImageView"
-        android:layout_width="300dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
         android:adjustViewBounds="true"
         android:background="@drawable/view_background"
         android:contentDescription="@string/app_name"
         android:elevation="6dp"
         android:minHeight="180dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ownerName" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/TitleTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
         android:ellipsize="end"
         android:gravity="center"
@@ -38,16 +39,17 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/videoPicturesImageView" />
 
 
     <TextView
         android:id="@+id/IntroductionTextView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="32dp"
         android:ellipsize="end"
         android:gravity="top"
         android:letterSpacing="0.1"
@@ -59,10 +61,10 @@
         android:shadowRadius="4"
         android:text="@string/text_view"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/downloadButton"
-        app:layout_constraintEnd_toEndOf="@+id/videoPicturesImageView"
-        app:layout_constraintStart_toStartOf="@+id/videoPicturesImageView"
-        app:layout_constraintTop_toBottomOf="@+id/videoPicturesImageView" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ownerName" />
 
     <Button
         android:id="@+id/ownerName"
@@ -84,50 +86,22 @@
         app:layout_constraintStart_toStartOf="@+id/TitleTextView"
         app:layout_constraintTop_toBottomOf="@+id/TitleTextView" />
 
-    <Button
-        android:id="@+id/downloadButton"
-        style="@style/Widget.MaterialComponents.Button.Icon"
+
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/extendedFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:clickable="true"
-        android:focusable="true"
+        android:layout_margin="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="24dp"
         android:text="@string/download"
-        app:icon="@drawable/ic_get_app_black_48dp"
-        app:iconSize="24dp"
+        android:textColor="@color/white"
+        android:tint="?attr/colorOnSecondary"
+        app:backgroundTint="@color/fab_bg"
+        app:icon="@mipmap/ic_get_app_white_48dp"
+        app:iconTint="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/searchButton"
-        app:layout_constraintStart_toEndOf="@+id/shareButton" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <Button
-        android:id="@+id/searchButton"
-        style="@style/Widget.MaterialComponents.Button.Icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="32dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:text="search"
-        app:icon="@drawable/ic_search_white_48dp"
-        app:iconSize="24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/downloadButton" />
-
-    <Button
-        android:id="@+id/shareButton"
-        style="@style/Widget.MaterialComponents.Button.Icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginBottom="32dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:text="share"
-        app:icon="@drawable/ic_reply_white_48dp"
-        app:iconSize="24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/downloadButton"
-        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

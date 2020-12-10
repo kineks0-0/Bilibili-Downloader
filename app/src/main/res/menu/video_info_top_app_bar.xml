@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <item
+        android:id="@+id/search"
+        android:icon="@mipmap/ic_search_white_48dp"
+        android:title="search"
+        android:contentDescription="content_description_search"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/info"
+        android:contentDescription="info"
+        android:icon="@mipmap/ic_analytics_white_48dp"
+        android:title="info"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/share"
+        android:contentDescription="content_description_share"
+        android:icon="@mipmap/ic_share_white_48dp"
+        android:title="share"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/more"
+        android:title="more"
+        android:contentDescription="content_description_more"
+        app:showAsAction="never" />
+
+</menu>

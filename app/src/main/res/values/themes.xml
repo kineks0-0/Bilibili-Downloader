@@ -12,6 +12,14 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+        <item name="android:textColorPrimary" >@color/white</item>
+    </style>
+
+    <!--Toolbar的Theme的设置，都是针对popup的设置-->
+    <style name="ToolbarTheme" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="android:colorBackground">#222B44</item><!--设置背景颜色的-->
+        <item name="android:textColorPrimary">@android:color/white</item><!--设置文字颜色的-->
+        <item name="android:textSize">16sp</item><!--设置文字大小的-->
     </style>
 
 </resources>

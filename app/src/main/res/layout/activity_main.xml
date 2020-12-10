@@ -19,9 +19,11 @@
             style="@style/Widget.MaterialComponents.Toolbar.Primary"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="string/page_title"
+            app:titleTextColor="@color/colorPrimary"
             android:background="@color/white"
-            app:titleTextColor="@color/colorPrimary"/>
+            app:navigationContentDescription="@string/app_name"
+            app:navigationIcon="@mipmap/ic_menu_black_24dp"
+            app:title="Title" />
 
         <!--
             app:menu="@menu/top_app_bar"

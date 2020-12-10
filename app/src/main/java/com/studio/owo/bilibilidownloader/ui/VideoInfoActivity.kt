@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MenuItem
+import com.google.android.material.snackbar.Snackbar
 import com.studio.owo.bilibilidownloader.R
 import com.studio.owo.bilibilidownloader.core.api.`interface`.BiliBiliApiService
 import kotlinx.android.synthetic.main.activity_video_info.*
@@ -30,8 +32,13 @@ class VideoInfoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_video_info)
+        topAppBar.setOnMenuItemClickListener {
+            videoInfoFragment.onOptionsItemSelected(it)
+        }
+    }
 
-
+    override fun onStart() {
+        super.onStart()
 
         val videoID: String = intent.getStringExtra("ID") ?: "AV23339072"
 
@@ -47,9 +54,11 @@ class VideoInfoActivity : AppCompatActivity() {
             biliApiService.getBvVideoInfo(videoID)
         }
         videoInfoFragment.onResult(call)
-
     }
 
 
+    /*override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return videoInfoFragment.onOptionsItemSelected(item)
+    }*/
 
 }

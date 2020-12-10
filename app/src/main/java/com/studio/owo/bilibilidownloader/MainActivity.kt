@@ -21,10 +21,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        VideoInfoActivity.launchActivity(this,"AV23339072")
 
     }
 
+    override fun onStart() {
+        super.onStart()
+        VideoInfoActivity.launchActivity(this,"AV23339072")
+    }
 
     override fun onResume() {
         super.onResume()
@@ -40,7 +43,10 @@ class MainActivity : AppCompatActivity() {
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
                 )) {
                 // 给用于予以权限解释, 对于已经拒绝过的情况，先提示申请理由，再进行申请
-                toast("程序需要读写权限来读取缓存和导出歌曲")
+                //toast("程序需要读写权限来读取缓存和导出歌曲")
+                Snackbar.make(this.findViewById(R.id.main_layout),
+                    "程序需要读写权限来读取缓存和导出歌曲", Snackbar.LENGTH_INDEFINITE)
+                    .show()
                 requestPermissions(
                     arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
                     REQUEST_PERMISSION_CODE_WRITE_EXTERNAL_STORAGE
@@ -88,7 +94,7 @@ class MainActivity : AppCompatActivity() {
                         toast("程序需要读写权限保证正常运行")
                     } else {
                         // 用户勾选了不再提醒，引导用户进入设置界面进行开启权限
-                        Snackbar.make(this.findViewById(R.id.main_layout), "需要打开权限才能使用该功能，您也可以前往设置->应用。。。开启权限",
+                        Snackbar.make(this.findViewById(R.id.main_layout), "需要打开权限才能使用该功能，您也可以前往设置->应用->开启权限",
                             Snackbar.LENGTH_INDEFINITE)
                             .setAction("确定") {
                                 /*val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)

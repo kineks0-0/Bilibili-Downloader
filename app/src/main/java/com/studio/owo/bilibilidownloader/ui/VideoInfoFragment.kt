@@ -10,10 +10,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.text.InputType
 import android.util.Log
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.webkit.MimeTypeMap
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -50,8 +47,8 @@ class VideoInfoFragment : Fragment() {
     private val options: RequestOptions by lazy {
         RequestOptions
             .bitmapTransform(RoundedCorners(rdp))
-            .placeholder(R.drawable.view_background)
-            .error(R.drawable.view_background2)
+            .placeholder(R.drawable.view_background_radius)
+            .error(R.drawable.view_background2_radius)
     }
     private val requestManager: RequestManager by lazy { Glide.with(this) }
 
@@ -84,97 +81,8 @@ class VideoInfoFragment : Fragment() {
         super.onStart()
 
 
-        shareButton.setOnClickListener {
-            val stringBuilder by lazy {
-                StringBuilder()
-                    .append(
-                        "请求状态  :  " +
-                                resultInfo.code + " " + resultInfo.massages
-                                + "  （" +
-                                when (resultInfo.code) {
-                                    0 -> "成功"
-                                    -400 -> "请求错误"
-                                    -403 -> "权限不足"
-                                    -404 -> "无视频"
-                                    62002 -> "稿件不可见"
-                                    else -> "未知"
-                                } + ")" +
 
-
-                                "\n视频标题  :  " + videoInfoResult.title +
-                                "\n视频分区  :  " + videoInfoResult.tagName + " - " + videoInfoResult.tid +
-                                "\n视频时长  :  " + videoInfoResult.duration +
-                                "\n视频发布  :  " + videoInfoResult.publicDate +
-                                "\n视频创建  :  " + videoInfoResult.createTime +
-                                "\n视频分P   :  " + videoInfoResult.videos +
-                                "\n视频类型  :  " + videoInfoResult.copyright + " " + when (videoInfoResult.copyright) {
-                            1 -> "原创"
-                            else -> "转载"
-                        } +
-                                "\n视频UP主  :  " + videoInfoResult.owner.name + "  (mid:" + videoInfoResult.owner.mid + ")" +
-                                "\n视频状态  :  " + videoInfoResult.state + "  (" +
-                                when (videoInfoResult.state) {
-                                    0 -> "开放浏览"
-                                    1 -> "橙色通过"
-                                    -1 -> "待审"
-                                    -2 -> "被打回"
-                                    -3 -> "网警锁定"
-                                    -4 -> "被锁定"
-                                    -5 -> "管理员锁定 (可浏览)"
-                                    -6 -> "修复待审"
-                                    -7 -> "暂缓待审"
-                                    -8 -> "补档待审"
-                                    -9 -> "等待转码"
-                                    -10 -> "延迟审核"
-                                    -11 -> "视频源待修"
-                                    -12 -> "转储失败"
-                                    -13 -> "允许评论待审"
-                                    -14 -> "临时回收站"
-                                    -15 -> "分发中"
-                                    -16 -> "转码失败"
-                                    -20 -> "创建未提交"
-                                    -30 -> "创建已提交"
-                                    -40 -> "定时发布"
-                                    -100 -> "用户删除"
-                                    else -> "未知"
-                                } + ")" +
-
-                                "\n视频简介  :  \n\n" + videoInfoResult.desc + "\n\n\n" +
-                                "\n视频属性  :  " +
-                                "\n视频封面  :  " + videoInfoResult.pic +
-                                "\n" +
-                                "\n" +
-                                "\n"
-
-
-                    )
-            }
-
-            MaterialAlertDialogBuilder(it.context)
-                .setTitle("视频数据")
-                .setMessage(stringBuilder)
-                /*.setNeutralButton("R.string.cancel") { dialog, which ->
-                    // Respond to neutral button press
-                }*/
-                .setNegativeButton("ok") { dialog, which ->
-
-                }
-                .setPositiveButton("copy") { dialog, which ->
-                    dialog.dismiss()
-                    //获取剪贴板管理器：
-                    val cm =
-                        getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                    // 创建普通字符型ClipData
-                    val mClipData = ClipData.newPlainText("Label", stringBuilder)
-                    // 将ClipData内容放到系统剪贴板里。
-                    cm.setPrimaryClip(mClipData)
-                    Snackbar.make(it, "Text Copied", Snackbar.LENGTH_SHORT).show()
-                }
-                .show()
-        }
-
-
-        shareButton.setOnLongClickListener {
+        /*shareButton.setOnLongClickListener {
             MaterialAlertDialogBuilder(it.context)
                 .setTitle("VideoInfoResult To String")
                 .setMessage(videoInfoResult.toString())
@@ -192,38 +100,21 @@ class VideoInfoFragment : Fragment() {
                 }
                 .show()
             true
-        }
+        }*/
 
 
 
-        downloadButton.setOnLongClickListener {
-
-            //val contextView = findViewById<View>(R.id.context_view)
-
-            Snackbar.make(it, "Long Click", Snackbar.LENGTH_SHORT)
-                .show()
-
-            true
-        }
-
-        downloadButton.setOnClickListener {
+        extendedFab.setOnClickListener {
             val call = biliApiService.getVideoPlayUrl(videoInfoResult.bvid, videoInfoResult.cid)
             call.enqueue(object : Callback<ResponseBody> {
-                override fun onResponse(
-                    call: Call<ResponseBody>,
-                    response: Response<ResponseBody>
-                ) {
-
-
+                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                     val userType: Type = object : TypeToken<TResult<VideoPlayUrl>>() {}.type
-                    val resultInfo: TResult<VideoPlayUrl> = json.fromJson(
-                        response.body()!!.string(), userType
-                    )
+                    val resultInfo: TResult<VideoPlayUrl> = json.fromJson(response.body()!!.string(), userType)
                     val playUrl = resultInfo.data
 
                     Snackbar.make(
                         it ,
-                        "Downloading Video  " + videoInfoResult.bvid,
+                        "Downloading Video - " + videoInfoResult.title,
                         Snackbar.LENGTH_LONG
                     )
                         .setAction("CANCEL") {
@@ -236,7 +127,7 @@ class VideoInfoFragment : Fragment() {
 
                         }
                         .show()
-                    //return
+
                     //Log.d(this@VideoInfoFragment::class.java.simpleName, playUrl.toString())
                     //Log.d(this@VideoInfoFragment::class.java.simpleName, playUrl.dUrl[0].url)
                     //Log.d(this@VideoInfoFragment::class.java.simpleName, "UserAgent\n" + HttpUtil.getUserAgent())
@@ -262,12 +153,6 @@ class VideoInfoFragment : Fragment() {
                     //request.setDescription("正在下载" + videoInfoResult.bvid )
                     //request.setAllowedOverRoaming(false)
                     //设置文件存放目录
-                    /*request.setDestinationInExternalFilesDir(
-                        getApplicationContext(),
-                        Environment.DIRECTORY_MOVIES,
-                        videoInfoResult.bvid// + " - " + videoInfoResult.title + ".flv"
-                    )
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdir()*/
                     request.setDestinationInExternalPublicDir(
                         Environment.DIRECTORY_MOVIES,
                         videoInfoResult.owner.name
@@ -276,16 +161,7 @@ class VideoInfoFragment : Fragment() {
                                 + "_" + playUrl.format
                                 + "." + fileExtension
                     )
-                    //request.setDestinationUri(Uri.fromFile(File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),videoInfoResult.bvid)))
-
                     downloadManagerQueryID = downManager.enqueue(request)
-
-                    /*Snackbar.make(
-                        it.rootView,
-                        "DownloadManagerQueryID = $id",
-                        Snackbar.LENGTH_SHORT
-                    ).show()*/
-
                 }
 
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
@@ -293,6 +169,7 @@ class VideoInfoFragment : Fragment() {
                 }
             })
         }
+
 
         videoPicturesImageView.setOnClickListener {
 
@@ -341,67 +218,155 @@ class VideoInfoFragment : Fragment() {
             true
         }
 
-        searchButton.setOnClickListener {
-            //val editText = EditText(it.context)
-            val container = ConstraintLayout(it.context)
-            val lp = ConstraintLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            lp.setMargins(40, 0, 40, 0)
-            val input = EditText(it.context)
-            input.layoutParams = lp
-            input.gravity = Gravity.TOP or Gravity.LEFT
-            input.inputType =
-                InputType.TYPE_TEXT_FLAG_CAP_SENTENCES or InputType.TYPE_TEXT_FLAG_MULTI_LINE
-            input.setLines(1)
-            input.maxLines = 1
-            input.setText(videoInfoResult.bvid)//"lastDateValue"
-            container.addView(input, lp)
 
-            //(editText.layoutParams as MarginLayoutParams).setMargins(50)editText.requestLayout()
+    }
 
 
-            MaterialAlertDialogBuilder(it.context)
-                .setTitle("BiliBili Video ID 跳转")
-                .setMessage("输入AV号或者BV号")
-                .setNegativeButton("取消") { _ , _ -> }
-                .setPositiveButton("确认") { dialog, _ ->
-                    dialog.dismiss()
 
-                    if (input.text.isEmpty()) {
-                        Snackbar.make(this.view!! ,"错误：请先输入BiliBili Video ID",Snackbar.LENGTH_SHORT).show()
-                        return@setPositiveButton
+
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.search -> {
+                val container = ConstraintLayout(view!!.context)
+                val lp = ConstraintLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                lp.setMargins(40, 0, 40, 0)
+                val input = EditText(view!!.context)
+                input.layoutParams = lp
+                input.gravity = Gravity.TOP //or Gravity.LEFT
+                input.inputType =
+                    InputType.TYPE_TEXT_FLAG_CAP_SENTENCES or InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                input.setLines(1)
+                input.maxLines = 1
+                input.setText(videoInfoResult.bvid)//"lastDateValue"
+                container.addView(input, lp)
+
+                //(editText.layoutParams as MarginLayoutParams).setMargins(50)editText.requestLayout()
+
+                MaterialAlertDialogBuilder(view!!.context)
+                    .setTitle("BiliBili Video ID 跳转")
+                    .setMessage("输入AV号或者BV号")
+                    .setNegativeButton("取消") { _ , _ -> }
+                    .setPositiveButton("确认") { dialog, _ ->
+                        dialog.dismiss()
+
+                        if (input.text.isEmpty()) {
+                            Snackbar.make(this.view!! ,"错误：请先输入BiliBili Video ID",Snackbar.LENGTH_SHORT).show()
+                            return@setPositiveButton
+                        }
+                        val inputText = input.text.toString()
+                        VideoInfoActivity.launchActivity(activity!!,inputText)
                     }
-                    val inputText = input.text.toString()
-                    VideoInfoActivity.launchActivity(activity!!,inputText)
+                    .setView(container)
+                    .show()
+            }
+            R.id.info -> {
+
+                val stringBuilder by lazy {
+                    StringBuilder()
+                        .append(
+                            "请求状态  :  " +
+                                    resultInfo.code + " " + resultInfo.massages
+                                    + "  （" +
+                                    when (resultInfo.code) {
+                                        0 -> "成功"
+                                        -400 -> "请求错误"
+                                        -403 -> "权限不足"
+                                        -404 -> "无视频"
+                                        62002 -> "稿件不可见"
+                                        else -> "未知"
+                                    } + ")" +
+
+
+                                    "\n视频标题  :  " + videoInfoResult.title +
+                                    "\n视频分区  :  " + videoInfoResult.tagName + " - " + videoInfoResult.tid +
+                                    "\n视频时长  :  " + videoInfoResult.duration +
+                                    "\n视频发布  :  " + videoInfoResult.publicDate +
+                                    "\n视频创建  :  " + videoInfoResult.createTime +
+                                    "\n视频分P   :  " + videoInfoResult.videos +
+                                    "\n视频类型  :  " + videoInfoResult.copyright + " " + when (videoInfoResult.copyright) {
+                                1 -> "原创"
+                                else -> "转载"
+                            } +
+                                    "\n视频UP主  :  " + videoInfoResult.owner.name + "  (mid:" + videoInfoResult.owner.mid + ")" +
+                                    "\n视频状态  :  " + videoInfoResult.state + "  (" +
+                                    when (videoInfoResult.state) {
+                                        0 -> "开放浏览"
+                                        1 -> "橙色通过"
+                                        -1 -> "待审"
+                                        -2 -> "被打回"
+                                        -3 -> "网警锁定"
+                                        -4 -> "被锁定"
+                                        -5 -> "管理员锁定 (可浏览)"
+                                        -6 -> "修复待审"
+                                        -7 -> "暂缓待审"
+                                        -8 -> "补档待审"
+                                        -9 -> "等待转码"
+                                        -10 -> "延迟审核"
+                                        -11 -> "视频源待修"
+                                        -12 -> "转储失败"
+                                        -13 -> "允许评论待审"
+                                        -14 -> "临时回收站"
+                                        -15 -> "分发中"
+                                        -16 -> "转码失败"
+                                        -20 -> "创建未提交"
+                                        -30 -> "创建已提交"
+                                        -40 -> "定时发布"
+                                        -100 -> "用户删除"
+                                        else -> "未知"
+                                    } + ")" +
+
+                                    "\n视频简介  :  \n\n" + videoInfoResult.desc + "\n\n\n" +
+                                    "\n视频属性  :  " +
+                                    "\n视频封面  :  " + videoInfoResult.pic +
+                                    "\n" +
+                                    "\n" +
+                                    "\n"
+
+
+                        )
                 }
-                .setView(container)
-                .show()
+
+                MaterialAlertDialogBuilder(view!!.context)
+                    .setTitle("视频数据")
+                    .setMessage(stringBuilder)
+                    /*.setNeutralButton("R.string.cancel") { dialog, which ->
+                        // Respond to neutral button press
+                    }*/
+                    .setNegativeButton("ok") { dialog, which ->
+
+                    }
+                    .setPositiveButton("copy") { dialog, which ->
+                        dialog.dismiss()
+                        //获取剪贴板管理器：
+                        val cm =
+                            getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                        // 创建普通字符型ClipData
+                        val mClipData = ClipData.newPlainText("Label", stringBuilder)
+                        // 将ClipData内容放到系统剪贴板里。
+                        cm.setPrimaryClip(mClipData)
+                        Snackbar.make(view!!, "Text Copied", Snackbar.LENGTH_SHORT).show()
+                    }
+                    .show()
+            }
+            R.id.share -> {
+                Snackbar.make(view!!,item.title,Snackbar.LENGTH_SHORT).show()
+            }
+            R.id.more -> {
+                Snackbar.make(view!!,item.title,Snackbar.LENGTH_SHORT).show()
+            }
+            else -> {Snackbar.make(view!!,"Unknown",Snackbar.LENGTH_SHORT).show()}
+
         }
-
-    }
-
-    override fun onResume() {
-        super.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
+        return true
     }
 
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        val videoInfoFragment = VideoInfoFragment()
-        val mainActivity = activity as MainActivity
-        //mainActivity.backContent(videoInfoFragment)
 
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-    }
 
 
     fun onResult(call: Call<ResponseBody>) {
