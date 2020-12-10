@@ -18,9 +18,7 @@ import android.webkit.MimeTypeMap
 import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -35,7 +33,7 @@ import com.studio.owo.bilibilidownloader.core.api.*
 import com.studio.owo.bilibilidownloader.core.api.`interface`.BiliBiliApiService
 import com.studio.owo.bilibilidownloader.core.api.dataclass.*
 import com.studio.owo.bilibilidownloader.getApplicationContext
-import com.studio.owo.bilibilidownloader.toast
+import kotlinx.android.synthetic.main.activity_video_info.*
 import kotlinx.android.synthetic.main.fragment_video_info.*
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -84,6 +82,8 @@ class VideoInfoFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+
+
         shareButton.setOnClickListener {
             val stringBuilder by lazy {
                 StringBuilder()
@@ -343,7 +343,8 @@ class VideoInfoFragment : Fragment() {
                         return@setPositiveButton
                     }
                     val inputText = input.text.toString()
-                    val call: Call<ResponseBody> =
+                    VideoInfoActivity.launchActivity(activity!!,inputText)
+                    /*val call: Call<ResponseBody> =
                         if (input.text[0] == 'A' || input.text[0] == 'a') {
                             biliApiService.getAvVideoInfo(inputText.substring(2,inputText.length))
                         } else {
@@ -353,12 +354,12 @@ class VideoInfoFragment : Fragment() {
 
                     val videoInfoFragment = VideoInfoFragment()
                     videoInfoFragment.onResult(call)
-                    /*.setCustomAnimations(
+                    .setCustomAnimations(
                         FragmentTransaction.TRANSIT_FRAGMENT_CLOSE,
                         FragmentTransaction.TRANSIT_NONE,
                         FragmentTransaction.TRANSIT_NONE,
                         FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)*/
-                    activity!!.supportFragmentManager.beginTransaction()
+                    /*activity!!.supportFragmentManager.beginTransaction()
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
                         /*.setCustomAnimations(
                             R.anim.right_in,
@@ -375,7 +376,7 @@ class VideoInfoFragment : Fragment() {
                         .hide(this)
                         .add(R.id.main_layout, videoInfoFragment, input.text.toString())
                         .addToBackStack(input.text.toString())
-                        .commit()
+                        .commit()*/
                 }
                 .setView(container)
                 .show()
@@ -442,7 +443,7 @@ class VideoInfoFragment : Fragment() {
                 this@VideoInfoFragment.TitleTextView.text = videoInfoResult.title
                 this@VideoInfoFragment.ownerName.text = videoInfoResult.owner.name
                 this@VideoInfoFragment.IntroductionTextView.text = videoInfoResult.desc
-
+                (activity as VideoInfoActivity).topAppBar.title = videoInfoResult.bvid
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {

@@ -10,6 +10,6 @@
 
 
     <color name="colorPrimary">#6C73FF</color>
-    <color name="colorPrimaryVariant">#6A5FFF</color>
-    <!--color name="colorAccent">#7589ED</color-->
+    <color name="colorPrimaryVariant">@android:color/darker_gray</color>
+    <!--color name="colorAccent">#7589ED#6A5FFF</color-->
 </resources>
