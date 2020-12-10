@@ -149,6 +149,7 @@ class VideoInfoFragment : Fragment() {
 
                     )
             }
+
             MaterialAlertDialogBuilder(it.context)
                 .setTitle("视频数据")
                 .setMessage(stringBuilder)
@@ -171,6 +172,30 @@ class VideoInfoFragment : Fragment() {
                 }
                 .show()
         }
+
+
+        shareButton.setOnLongClickListener {
+            MaterialAlertDialogBuilder(it.context)
+                .setTitle("VideoInfoResult To String")
+                .setMessage(videoInfoResult.toString())
+                .setNegativeButton("取消") { dialog, _ -> dialog.dismiss() }
+                .setPositiveButton("拷贝") { dialog, which ->
+                    dialog.dismiss()
+                    //获取剪贴板管理器：
+                    val cm =
+                        getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                    // 创建普通字符型ClipData
+                    val mClipData = ClipData.newPlainText("Label", videoInfoResult.toString())
+                    // 将ClipData内容放到系统剪贴板里。
+                    cm.setPrimaryClip(mClipData)
+                    Snackbar.make(it, "Text Copied", Snackbar.LENGTH_SHORT).show()
+                }
+                .show()
+            true
+        }
+
+
+
         downloadButton.setOnLongClickListener {
 
             //val contextView = findViewById<View>(R.id.context_view)
@@ -197,8 +222,8 @@ class VideoInfoFragment : Fragment() {
                     val playUrl = resultInfo.data
 
                     Snackbar.make(
-                        it.rootView,
-                        "Downloading Video \$Bvid = " + videoInfoResult.bvid,
+                        it ,
+                        "Downloading Video  " + videoInfoResult.bvid,
                         Snackbar.LENGTH_LONG
                     )
                         .setAction("CANCEL") {
@@ -216,16 +241,17 @@ class VideoInfoFragment : Fragment() {
                     //Log.d(this@VideoInfoFragment::class.java.simpleName, playUrl.dUrl[0].url)
                     //Log.d(this@VideoInfoFragment::class.java.simpleName, "UserAgent\n" + HttpUtil.getUserAgent())
                     val url = playUrl.dUrl[0].url
-                    val fileExtension = MimeTypeMap.getFileExtensionFromUrl(url)
                     val request = DownloadManager.Request(Uri.parse(url))
-                    request.setMimeType(
-                        MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension)
-                    )
 
                     request.addRequestHeader("User-Agent", "Bilibili Freedoooooom/MarkII")
                     request.addRequestHeader("referer", "https://www.bilibili.com/")
                     request.addRequestHeader("origin", "https://www.bilibili.com/")
                     //request.addRequestHeader("cookie","")
+
+                    val fileExtension = MimeTypeMap.getFileExtensionFromUrl(url)
+                    request.setMimeType(
+                        MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension)
+                    )
 
                     //request.setMimeType("application/vnd.android.package-archive");
                     //设置在什么网络情况下进行下载
@@ -273,7 +299,7 @@ class VideoInfoFragment : Fragment() {
         }
         videoPicturesImageView.setOnLongClickListener {
             Snackbar.make(
-                it.rootView,
+                it ,
                 "保存封面?",
                 Snackbar.LENGTH_LONG
             )
@@ -305,6 +331,11 @@ class VideoInfoFragment : Fragment() {
                     )
 
                     downloadManagerQueryID = downManager.enqueue(request)
+                    Snackbar.make(
+                        it ,
+                        "下载中",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
                 }
                 .show()
             true
@@ -339,44 +370,11 @@ class VideoInfoFragment : Fragment() {
                     dialog.dismiss()
 
                     if (input.text.isEmpty()) {
-                        Snackbar.make(this.view!!.rootView,"错误：请先输入BiliBili Video ID",Snackbar.LENGTH_SHORT).show()
+                        Snackbar.make(this.view!! ,"错误：请先输入BiliBili Video ID",Snackbar.LENGTH_SHORT).show()
                         return@setPositiveButton
                     }
                     val inputText = input.text.toString()
                     VideoInfoActivity.launchActivity(activity!!,inputText)
-                    /*val call: Call<ResponseBody> =
-                        if (input.text[0] == 'A' || input.text[0] == 'a') {
-                            biliApiService.getAvVideoInfo(inputText.substring(2,inputText.length))
-                        } else {
-                            biliApiService.getBvVideoInfo(input.text.toString())
-                        }
-                    //toast(inputText.substring(2, inputText.length))
-
-                    val videoInfoFragment = VideoInfoFragment()
-                    videoInfoFragment.onResult(call)
-                    .setCustomAnimations(
-                        FragmentTransaction.TRANSIT_FRAGMENT_CLOSE,
-                        FragmentTransaction.TRANSIT_NONE,
-                        FragmentTransaction.TRANSIT_NONE,
-                        FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)*/
-                    /*activity!!.supportFragmentManager.beginTransaction()
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-                        /*.setCustomAnimations(
-                            R.anim.right_in,
-                            R.anim.fade_out,
-                            R.anim.fade_in,
-                            R.anim.right_out
-                        )*/
-                        .setCustomAnimations(
-                            R.anim.right_in,
-                            R.anim.bottom_out,
-                            R.anim.bottom_in,
-                            R.anim.right_out
-                        )
-                        .hide(this)
-                        .add(R.id.main_layout, videoInfoFragment, input.text.toString())
-                        .addToBackStack(input.text.toString())
-                        .commit()*/
                 }
                 .setView(container)
                 .show()
@@ -412,16 +410,34 @@ class VideoInfoFragment : Fragment() {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
 
                 val userType: Type = object : TypeToken<TResult<VideoInfo>>() {}.type
+                val rawJSON = response.body()!!.string()
                 resultInfo = json.fromJson(
-                    response.body()!!.string(),
+                    rawJSON,
                     userType
                 )
                 if (resultInfo.data == null) {
                     Snackbar.make(
-                        this@VideoInfoFragment.view!!.rootView,
+                        this@VideoInfoFragment.view!! ,
                         "加载错误 Code " + resultInfo.code,
                         Snackbar.LENGTH_SHORT
-                    ).show()
+                    ).setAction("RawJSON") {
+                        MaterialAlertDialogBuilder(it.context)
+                            .setTitle("RawJSON")
+                            .setMessage(rawJSON)
+                            .setNegativeButton("取消") { dialog, _ -> dialog.dismiss() }
+                            .setPositiveButton("拷贝") { dialog, which ->
+                                dialog.dismiss()
+                                //获取剪贴板管理器：
+                                val cm =
+                                    getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                                // 创建普通字符型ClipData
+                                val mClipData = ClipData.newPlainText("Label", rawJSON)
+                                // 将ClipData内容放到系统剪贴板里。
+                                cm.setPrimaryClip(mClipData)
+                                Snackbar.make(it, "Text Copied", Snackbar.LENGTH_SHORT).show()
+                            }
+                            .show()
+                    }.show()
                     videoInfoResult = VideoInfo(
                         -1,"", -1, -1, -1, "", Dimension(-1, -1, -1),
                         -1, "", -1, false, Owner("", -1, ""), listOf(), "", -1,
@@ -443,7 +459,7 @@ class VideoInfoFragment : Fragment() {
                 this@VideoInfoFragment.TitleTextView.text = videoInfoResult.title
                 this@VideoInfoFragment.ownerName.text = videoInfoResult.owner.name
                 this@VideoInfoFragment.IntroductionTextView.text = videoInfoResult.desc
-                (activity as VideoInfoActivity).topAppBar.title = videoInfoResult.bvid
+                //(activity as VideoInfoActivity).topAppBar.title = videoInfoResult.title
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {

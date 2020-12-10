@@ -2,7 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/videoInfoFragmentLayout">
 
     <ImageView
         android:id="@+id/videoPicturesImageView"
@@ -111,7 +112,8 @@
         app:icon="@drawable/ic_search_white_48dp"
         app:iconSize="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/downloadButton" />
 
     <Button
         android:id="@+id/shareButton"
@@ -126,5 +128,6 @@
         app:icon="@drawable/ic_reply_white_48dp"
         app:iconSize="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/downloadButton"
         app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
